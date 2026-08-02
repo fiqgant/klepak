@@ -129,37 +129,37 @@ export default function DisplayPage() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "announcements" },
-        fetchAll
+        fetchAll,
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "posters" },
-        fetchAll
+        fetchAll,
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "schedule_items" },
-        fetchAll
+        fetchAll,
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "qr_links" },
-        fetchAll
+        fetchAll,
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "videos" },
-        fetchAll
+        fetchAll,
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "emergency_override" },
-        fetchAll
+        fetchAll,
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "settings" },
-        fetchAll
+        fetchAll,
       )
       .subscribe();
 
@@ -186,20 +186,21 @@ export default function DisplayPage() {
 
   const views: DisplayView[] = useMemo(() => {
     const livePosters = posters.filter((p) =>
-      isWithinWindow(p.starts_at, p.ends_at, now)
+      isWithinWindow(p.starts_at, p.ends_at, now),
     );
     const liveQr = qrLinks.filter((q) =>
-      isWithinWindow(q.starts_at, q.ends_at, now)
+      isWithinWindow(q.starts_at, q.ends_at, now),
     );
     const liveVideos = videos.filter((v) =>
-      isWithinWindow(v.starts_at, v.ends_at, now)
+      isWithinWindow(v.starts_at, v.ends_at, now),
     );
 
-    const content: Extract<DisplayView, { kind: "poster" | "qr" | "video" }>[] = [
-      ...livePosters.map((data) => ({ kind: "poster" as const, data })),
-      ...liveQr.map((data) => ({ kind: "qr" as const, data })),
-      ...liveVideos.map((data) => ({ kind: "video" as const, data })),
-    ];
+    const content: Extract<DisplayView, { kind: "poster" | "qr" | "video" }>[] =
+      [
+        ...livePosters.map((data) => ({ kind: "poster" as const, data })),
+        ...liveQr.map((data) => ({ kind: "qr" as const, data })),
+        ...liveVideos.map((data) => ({ kind: "video" as const, data })),
+      ];
     content.sort((a, b) => a.data.sort_order - b.data.sort_order);
 
     // Clock always anchors the rotation; announcements/schedule get their
