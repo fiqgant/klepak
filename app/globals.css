@@ -1,0 +1,92 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@theme {
+  /* legacy admin-panel palette (unchanged) */
+  --color-klepak-green: #133822;
+  --color-klepak-teal: #52928a;
+  --color-klepak-gold: #aa7b2d;
+  --color-klepak-cream: #faf7ef;
+  --color-klepak-alert: #c1442d;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Arial, sans-serif;
+  --font-mono: "DejaVu Sans Mono", "Courier New", Courier, monospace;
+
+  /* neobrutalism.dev component theme */
+  --color-background: #f2ede1;
+  --color-foreground: #16130f;
+  --color-main: #2f5fed;
+  --color-main-foreground: #ffffff;
+  --color-secondary-background: #ffffff;
+  --color-border: #16130f;
+  --color-destructive: #c1442d;
+  --color-destructive-foreground: #ffffff;
+  --color-ring: var(--color-border);
+  --radius-base: 0.75rem;
+  --shadow-shadow: 5px 5px 0px 0px var(--color-border);
+  --font-weight-base: 500;
+  --font-weight-heading: 800;
+
+  --translate-x-boxShadowX: 5px;
+  --translate-y-boxShadowY: 5px;
+  --translate-x-reverseBoxShadowX: -5px;
+  --translate-y-reverseBoxShadowY: -5px;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* Split-flap / departure-board clock digit cell */
+.flap-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "DejaVu Sans Mono", "Courier New", Courier, monospace;
+  font-variant-numeric: tabular-nums;
+  background: var(--color-foreground);
+  color: var(--color-background);
+  border: 4px solid var(--color-border);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-shadow);
+  position: relative;
+}
+
+.flap-cell::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Crossfade between full-screen display views */
+.slide-fade {
+  transition: opacity 1.2s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-fade {
+    transition: none !important;
+  }
+}
