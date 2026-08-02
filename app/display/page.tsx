@@ -238,6 +238,7 @@ export default function DisplayPage() {
         views={views}
         now={now}
         defaultSeconds={settings?.poster_default_seconds ?? 8}
+        idleYoutubeUrl={settings?.idle_youtube_url}
       />
     </main>
   );

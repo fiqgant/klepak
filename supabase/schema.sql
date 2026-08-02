@@ -90,6 +90,7 @@ on conflict (id) do nothing;
 create table if not exists settings (
   id                       integer primary key default 1,
   poster_default_seconds  integer not null default 8,
+  idle_youtube_url         text,
   updated_at               timestamptz not null default now(),
   constraint settings_singleton check (id = 1)
 );

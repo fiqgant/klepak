@@ -12,6 +12,7 @@ export default function SettingsSection() {
   const supabase = useMemo(() => createClient(), []);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [seconds, setSeconds] = useState("8");
+  const [idleYoutubeUrl, setIdleYoutubeUrl] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -25,6 +26,7 @@ export default function SettingsSection() {
       if (data) {
         setSettings(data);
         setSeconds(String(data.poster_default_seconds));
+        setIdleYoutubeUrl(data.idle_youtube_url ?? "");
       }
     }
     load();
@@ -36,7 +38,10 @@ export default function SettingsSection() {
     setSaved(false);
     await supabase
       .from("settings")
-      .update({ poster_default_seconds: Number(seconds) })
+      .update({
+        poster_default_seconds: Number(seconds),
+        idle_youtube_url: idleYoutubeUrl.trim() || null,
+      })
       .eq("id", 1);
     setSaving(false);
     setSaved(true);
@@ -55,6 +60,25 @@ export default function SettingsSection() {
             setSaved(false);
           }}
         />
+
+        <Label className="mt-2">
+          Video YouTube latar saat layar idle (opsional)
+        </Label>
+        <Input
+          type="text"
+          placeholder="ID atau URL video YouTube"
+          value={idleYoutubeUrl}
+          onChange={(e) => {
+            setIdleYoutubeUrl(e.target.value);
+            setSaved(false);
+          }}
+        />
+        <p className="text-xs text-foreground/50">
+          Diputar sebagai latar di belakang jam hanya ketika tidak ada
+          pengumuman/jadwal/poster/QR/video lain yang aktif. Kosongkan untuk
+          jam polos seperti biasa.
+        </p>
+
         <Button type="submit" disabled={saving}>
           {saving ? "Menyimpan..." : "Simpan"}
         </Button>

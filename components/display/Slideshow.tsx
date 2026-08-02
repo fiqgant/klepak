@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { DisplayView } from "@/lib/types";
 import { formatIndonesianDate } from "@/lib/date";
 import SplitFlapClock from "./SplitFlapClock";
+import IdleClock from "./IdleClock";
 import AnnouncementsList from "./AnnouncementsList";
 import ScheduleTable from "./ScheduleTable";
 import PosterSlide from "./PosterSlide";
@@ -22,10 +23,12 @@ export default function Slideshow({
   views,
   now,
   defaultSeconds,
+  idleYoutubeUrl,
 }: {
   views: DisplayView[];
   now: Date;
   defaultSeconds: number;
+  idleYoutubeUrl?: string | null;
 }) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -46,6 +49,22 @@ export default function Slideshow({
   // Only the clock (no other active content): render it statically full
   // screen instead of running a pointless one-item rotation.
   const isStatic = views.length <= 1;
+
+  // A stable identity for the current view set. `views` itself is a new
+  // array reference on every parent render (it's rebuilt each clock tick),
+  // so using it directly as an effect dependency below would reset the
+  // advance timer every second before it ever fires. This string only
+  // changes when the actual set of content changes.
+  const viewsKey = views
+    .map((v) => {
+      if (v.kind === "clock") return "clock";
+      if (v.kind === "announcements")
+        return `announcements:${v.data.map((a) => a.id).join(".")}`;
+      if (v.kind === "schedule")
+        return `schedule:${v.data.map((s) => s.id).join(".")}`;
+      return `${v.kind}:${v.data.id}`;
+    })
+    .join(",");
 
   useEffect(() => {
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
@@ -69,7 +88,7 @@ export default function Slideshow({
       if (fadeTimer.current) clearTimeout(fadeTimer.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index, views, defaultSeconds, isStatic]);
+  }, [index, viewsKey, defaultSeconds, isStatic]);
 
   function advanceNow() {
     if (isStatic) return;
@@ -94,14 +113,17 @@ export default function Slideshow({
       <div
         className={`slide-fade h-full w-full ${visible ? "opacity-100" : "opacity-0"}`}
       >
-        {current.kind === "clock" && (
-          <div className="flex h-full w-full flex-col items-center justify-center gap-6 bg-background px-8">
-            <SplitFlapClock now={now} />
-            <p className="text-center text-lg font-heading text-foreground/70 sm:text-2xl">
-              {formatIndonesianDate(now)}
-            </p>
-          </div>
-        )}
+        {current.kind === "clock" &&
+          (isStatic && idleYoutubeUrl ? (
+            <IdleClock now={now} youtubeUrl={idleYoutubeUrl} />
+          ) : (
+            <div className="flex h-full w-full flex-col items-center justify-center gap-6 bg-background px-8">
+              <SplitFlapClock now={now} />
+              <p className="text-center text-lg font-heading text-foreground/70 sm:text-2xl">
+                {formatIndonesianDate(now)}
+              </p>
+            </div>
+          ))}
         {current.kind === "announcements" && (
           <AnnouncementsList announcements={current.data} />
         )}
