@@ -24,11 +24,13 @@ export default function Slideshow({
   now,
   defaultSeconds,
   idleYoutubeUrl,
+  idleAudioUrl,
 }: {
   views: DisplayView[];
   now: Date;
   defaultSeconds: number;
   idleYoutubeUrl?: string | null;
+  idleAudioUrl?: string | null;
 }) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -114,8 +116,12 @@ export default function Slideshow({
         className={`slide-fade h-full w-full ${visible ? "opacity-100" : "opacity-0"}`}
       >
         {current.kind === "clock" &&
-          (isStatic && idleYoutubeUrl ? (
-            <IdleClock now={now} youtubeUrl={idleYoutubeUrl} />
+          (isStatic && (idleYoutubeUrl || idleAudioUrl) ? (
+            <IdleClock
+              now={now}
+              youtubeUrl={idleYoutubeUrl ?? null}
+              audioUrl={idleAudioUrl ?? null}
+            />
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center gap-6 bg-background px-8">
               <SplitFlapClock now={now} />

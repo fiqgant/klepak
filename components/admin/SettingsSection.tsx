@@ -8,13 +8,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Section from "./Section";
 
+async function uploadIdleAudioFile(file: File): Promise<string> {
+  const supabase = createClient();
+  const ext = file.name.split(".").pop() || "mp3";
+  const path = `idle-audio/${crypto.randomUUID()}.${ext}`;
+  const { error } = await supabase.storage
+    .from("signage-images")
+    .upload(path, file, { cacheControl: "3600", upsert: false });
+  if (error) throw error;
+  return supabase.storage.from("signage-images").getPublicUrl(path).data
+    .publicUrl;
+}
+
 export default function SettingsSection() {
   const supabase = useMemo(() => createClient(), []);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [seconds, setSeconds] = useState("8");
   const [idleYoutubeUrl, setIdleYoutubeUrl] = useState("");
+  const [idleAudioUrl, setIdleAudioUrl] = useState("");
+  const [audioFile, setAudioFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -27,6 +42,7 @@ export default function SettingsSection() {
         setSettings(data);
         setSeconds(String(data.poster_default_seconds));
         setIdleYoutubeUrl(data.idle_youtube_url ?? "");
+        setIdleAudioUrl(data.idle_audio_url ?? "");
       }
     }
     load();
@@ -36,15 +52,29 @@ export default function SettingsSection() {
     e.preventDefault();
     setSaving(true);
     setSaved(false);
-    await supabase
-      .from("settings")
-      .update({
-        poster_default_seconds: Number(seconds),
-        idle_youtube_url: idleYoutubeUrl.trim() || null,
-      })
-      .eq("id", 1);
-    setSaving(false);
-    setSaved(true);
+    setError(null);
+    try {
+      const audioUrl = audioFile
+        ? await uploadIdleAudioFile(audioFile)
+        : idleAudioUrl.trim() || null;
+
+      await supabase
+        .from("settings")
+        .update({
+          poster_default_seconds: Number(seconds),
+          idle_youtube_url: idleYoutubeUrl.trim() || null,
+          idle_audio_url: audioUrl,
+        })
+        .eq("id", 1);
+
+      setIdleAudioUrl(audioUrl ?? "");
+      setAudioFile(null);
+      setSaved(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal menyimpan.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -73,11 +103,29 @@ export default function SettingsSection() {
             setSaved(false);
           }}
         />
+
+        <Label className="mt-2">Musik latar saat layar idle (opsional)</Label>
+        <input
+          type="file"
+          accept="audio/*"
+          onChange={(e) => {
+            setAudioFile(e.target.files?.[0] ?? null);
+            setSaved(false);
+          }}
+          className="rounded-base border-2 border-border bg-secondary-background p-2 text-sm font-base text-foreground"
+        />
+        {idleAudioUrl && !audioFile && (
+          <p className="text-xs text-foreground/50">
+            File tersimpan saat ini: {idleAudioUrl.split("/").pop()}
+          </p>
+        )}
         <p className="text-xs text-foreground/50">
-          Diputar sebagai latar di belakang jam hanya ketika tidak ada
-          pengumuman/jadwal/poster/QR/video lain yang aktif. Kosongkan untuk
-          jam polos seperti biasa.
+          Diputar loop di latar hanya ketika layar benar-benar idle (tidak
+          ada konten aktif lain). Terpisah dari video YouTube di atas — bisa
+          dipakai salah satu atau keduanya. Kosongkan untuk tanpa musik.
         </p>
+
+        {error && <p className="text-sm text-destructive">{error}</p>}
 
         <Button type="submit" disabled={saving}>
           {saving ? "Menyimpan..." : "Simpan"}
