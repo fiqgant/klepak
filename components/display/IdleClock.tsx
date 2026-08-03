@@ -36,7 +36,8 @@ export default function IdleClock({
           />
         </div>
       ) : (
-        <div className="idle-aurora" aria-hidden="true">
+        <div className="idle-shapes" aria-hidden="true">
+          <span />
           <span />
           <span />
           <span />
@@ -48,9 +49,9 @@ export default function IdleClock({
       )}
       {youtubeUrl && <div className="absolute inset-0 bg-black/45" />}
       <div className="relative flex h-full w-full items-center justify-center px-8">
-        <div className="flex flex-col items-center gap-4 rounded-3xl border border-white/15 bg-white/10 px-10 py-10 shadow-2xl backdrop-blur-2xl sm:px-16 sm:py-12">
+        <div className="flex flex-col items-center gap-4 rounded-base border-4 border-border bg-secondary-background px-10 py-10 shadow-shadow sm:px-16 sm:py-12">
           <SplitFlapClock now={now} />
-          <p className="text-center text-lg font-heading text-white/80 sm:text-2xl">
+          <p className="text-center text-lg font-heading text-foreground/70 sm:text-2xl">
             {formatIndonesianDate(now)}
           </p>
         </div>
