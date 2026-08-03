@@ -2,8 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { DisplayView } from "@/lib/types";
-import { formatIndonesianDate } from "@/lib/date";
-import SplitFlapClock from "./SplitFlapClock";
 import IdleClock from "./IdleClock";
 import AnnouncementsList from "./AnnouncementsList";
 import ScheduleTable from "./ScheduleTable";
@@ -115,21 +113,13 @@ export default function Slideshow({
       <div
         className={`slide-fade h-full w-full ${visible ? "opacity-100" : "opacity-0"}`}
       >
-        {current.kind === "clock" &&
-          (isStatic && (idleYoutubeUrl || idleAudioUrl) ? (
-            <IdleClock
-              now={now}
-              youtubeUrl={idleYoutubeUrl ?? null}
-              audioUrl={idleAudioUrl ?? null}
-            />
-          ) : (
-            <div className="flex h-full w-full flex-col items-center justify-center gap-6 bg-background px-8">
-              <SplitFlapClock now={now} />
-              <p className="text-center text-lg font-heading text-foreground/70 sm:text-2xl">
-                {formatIndonesianDate(now)}
-              </p>
-            </div>
-          ))}
+        {current.kind === "clock" && (
+          <IdleClock
+            now={now}
+            youtubeUrl={idleYoutubeUrl ?? null}
+            audioUrl={idleAudioUrl ?? null}
+          />
+        )}
         {current.kind === "announcements" && (
           <AnnouncementsList announcements={current.data} />
         )}

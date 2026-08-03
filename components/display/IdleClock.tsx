@@ -25,7 +25,7 @@ export default function IdleClock({
 }) {
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
-      {youtubeUrl && (
+      {youtubeUrl ? (
         <div className="absolute inset-0 overflow-hidden">
           <iframe
             className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2"
@@ -35,12 +35,18 @@ export default function IdleClock({
             frameBorder={0}
           />
         </div>
+      ) : (
+        <div className="idle-aurora" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
       )}
       {audioUrl && (
         // eslint-disable-next-line jsx-a11y/media-has-caption
         <audio src={audioUrl} autoPlay loop className="hidden" />
       )}
-      <div className="absolute inset-0 bg-black/45" />
+      {youtubeUrl && <div className="absolute inset-0 bg-black/45" />}
       <div className="relative flex h-full w-full items-center justify-center px-8">
         <div className="flex flex-col items-center gap-4 rounded-3xl border border-white/15 bg-white/10 px-10 py-10 shadow-2xl backdrop-blur-2xl sm:px-16 sm:py-12">
           <SplitFlapClock now={now} />
