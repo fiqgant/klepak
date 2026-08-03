@@ -1,3 +1,10 @@
+// Accepts either a bare YouTube video ID or a full URL and returns the ID.
+export function extractYoutubeId(idOrUrl: string): string {
+  const id = idOrUrl.trim();
+  const match = id.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/);
+  return match ? match[1] : id;
+}
+
 // Accepts either a bare YouTube video ID or a full URL and normalizes to an
 // embeddable, autoplaying, looping URL, captions off. Muted by default
 // since autoplay-with-sound is blocked by most browsers without it — pass
@@ -8,9 +15,7 @@ export function toYouTubeEmbedUrl(
   options: { muted?: boolean } = {}
 ): string {
   const { muted = true } = options;
-  let id = idOrUrl.trim();
-  const match = id.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/);
-  if (match) id = match[1];
+  const id = extractYoutubeId(idOrUrl);
   const params = new URLSearchParams({
     autoplay: "1",
     mute: muted ? "1" : "0",
