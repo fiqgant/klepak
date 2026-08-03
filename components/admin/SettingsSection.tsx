@@ -157,6 +157,11 @@ export default function SettingsSection() {
           ada konten aktif lain). Terpisah dari video YouTube di atas — bisa
           dipakai salah satu atau keduanya. Kosongkan untuk tanpa musik.
         </p>
+        <a href="/display" target="_blank" rel="noopener noreferrer">
+          <Button type="button" variant="neutral" size="sm" className="w-full">
+            Buka /display buat cek langsung
+          </Button>
+        </a>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
