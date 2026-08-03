@@ -18,11 +18,12 @@ export default function IdleClock({
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
       <div className="absolute inset-0 overflow-hidden">
-        {/* Unmuted per product request — relies on the kiosk browser
-            allowing autoplay-with-sound without a user gesture. */}
+        {/* Muted: browsers (including Android WebView) block autoplay
+            with sound without a prior user gesture, so unmuted here
+            just means the video never starts at all. */}
         <iframe
           className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2"
-          src={toYouTubeEmbedUrl(youtubeUrl, { muted: false })}
+          src={toYouTubeEmbedUrl(youtubeUrl)}
           title="Latar video"
           allow="autoplay; encrypted-media"
           frameBorder={0}

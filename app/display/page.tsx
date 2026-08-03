@@ -24,6 +24,9 @@ const PRIORITY_RANK: Record<Announcement["priority"], number> = {
 };
 
 const REFRESH_INTERVAL_MS = 30_000;
+// TV kiosks have no way to manually refresh, so force a hard reload
+// periodically to shed memory/state drift from being on for hours.
+const HARD_RELOAD_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 export default function DisplayPage() {
   const supabase = useMemo(() => createClient(), []);
@@ -168,6 +171,14 @@ export default function DisplayPage() {
     };
   }, [supabase, fetchAll]);
 
+  // Hard reload every few hours — the TV has no way to refresh itself.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.location.reload();
+    }, HARD_RELOAD_INTERVAL_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Clock tick — also drives the live re-filter below so content
   // disappears the instant it expires, without waiting for a reload.
   useEffect(() => {
@@ -203,12 +214,7 @@ export default function DisplayPage() {
       ];
     content.sort((a, b) => a.data.sort_order - b.data.sort_order);
 
-    // Clock always anchors the rotation; announcements/schedule get their
-    // own full-screen view only when there's something to show. If none of
-    // that exists, the clock ends up as the sole view and is shown
-    // statically full screen instead of "no content" clutter.
-    return [
-      { kind: "clock" as const },
+    const rotating: DisplayView[] = [
       ...(liveAnnouncements.length > 0
         ? [{ kind: "announcements" as const, data: liveAnnouncements }]
         : []),
@@ -217,6 +223,10 @@ export default function DisplayPage() {
         : []),
       ...content,
     ];
+
+    // Clock only shows up when there is nothing else at all — real content
+    // rotates on its own without the clock interrupting it.
+    return rotating.length > 0 ? rotating : [{ kind: "clock" as const }];
   }, [posters, qrLinks, videos, now, liveAnnouncements, scheduleItems]);
 
   const emergencyActive = emergency?.is_active === true;
@@ -238,7 +248,7 @@ export default function DisplayPage() {
       <Slideshow
         views={views}
         now={now}
-        defaultSeconds={settings?.poster_default_seconds ?? 8}
+        defaultSeconds={settings?.poster_default_seconds ?? 20}
         idleYoutubeUrl={settings?.idle_youtube_url}
       />
     </main>
