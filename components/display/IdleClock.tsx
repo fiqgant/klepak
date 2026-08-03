@@ -1,44 +1,23 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { extractYoutubeId } from "@/lib/youtube";
+import { toYouTubeEmbedUrl } from "@/lib/youtube";
 import { formatIndonesianDate } from "@/lib/date";
 import SplitFlapClock from "./SplitFlapClock";
-
-interface YTPlayer {
-  playVideo: () => void;
-  unMute: () => void;
-  setVolume: (v: number) => void;
-  destroy: () => void;
-}
-
-declare global {
-  interface Window {
-    YT?: {
-      Player: new (
-        el: HTMLElement,
-        config: {
-          videoId: string;
-          width?: string;
-          height?: string;
-          playerVars: Record<string, string | number>;
-          events: { onReady: (e: { target: YTPlayer }) => void };
-        }
-      ) => YTPlayer;
-    };
-    onYouTubeIframeAPIReady?: () => void;
-  }
-}
 
 // Idle-state background: a looping YouTube video fills the screen (cropped
 // to always cover, like CSS background-size:cover) with a dark scrim over
 // it, and the clock floats on top in a glass card. Only used when there is
 // truly no other active content — see Slideshow.tsx.
 //
-// The video starts muted (the only way autoplay is reliably allowed at
-// all) and is unmuted a moment after it starts playing — browsers that
-// block autoplay-with-sound from the very first frame generally still
-// allow unmuting an already-playing element without a fresh user gesture.
+// Muted autoplay is the only playback mode that reliably starts on its own
+// across browsers, including Android WebView, without the visitor having
+// to press play. Both an unmuted embed and a "start muted then unmute via
+// the IFrame API" trick were tried and made the video need a manual play
+// press instead — worse than plain muted autoplay, so this stays muted.
+// Getting real autoplay-with-sound requires a browser/OS-level permission
+// (e.g. Chrome's per-site Sound: Allow setting, or launching the kiosk
+// browser with --autoplay-policy=no-user-gesture-required), not something
+// fixable from the page itself.
 export default function IdleClock({
   now,
   youtubeUrl,
@@ -46,77 +25,16 @@ export default function IdleClock({
   now: Date;
   youtubeUrl: string;
 }) {
-  const hostRef = useRef<HTMLDivElement | null>(null);
-  const playerRef = useRef<YTPlayer | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    function createPlayer() {
-      if (cancelled || !hostRef.current || !window.YT) return;
-      const id = extractYoutubeId(youtubeUrl);
-      playerRef.current = new window.YT.Player(hostRef.current, {
-        videoId: id,
-        width: "100%",
-        height: "100%",
-        playerVars: {
-          autoplay: 1,
-          mute: 1,
-          controls: 0,
-          loop: 1,
-          playlist: id,
-          modestbranding: 1,
-          rel: 0,
-          iv_load_policy: 3,
-          cc_load_policy: 0,
-          disablekb: 1,
-          fs: 0,
-        },
-        events: {
-          onReady: (e) => {
-            e.target.playVideo();
-            setTimeout(() => {
-              try {
-                e.target.unMute();
-                e.target.setVolume(100);
-              } catch {
-                // Browser refused — video stays muted, which is fine.
-              }
-            }, 300);
-          },
-        },
-      });
-    }
-
-    if (window.YT) {
-      createPlayer();
-    } else {
-      const previous = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
-        previous?.();
-        createPlayer();
-      };
-      if (!document.getElementById("youtube-iframe-api")) {
-        const script = document.createElement("script");
-        script.id = "youtube-iframe-api";
-        script.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(script);
-      }
-    }
-
-    return () => {
-      cancelled = true;
-      playerRef.current?.destroy();
-      playerRef.current = null;
-    };
-  }, [youtubeUrl]);
-
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 [&>iframe]:h-full [&>iframe]:w-full">
-          <div ref={hostRef} />
-        </div>
+        <iframe
+          className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2"
+          src={toYouTubeEmbedUrl(youtubeUrl)}
+          title="Latar video"
+          allow="autoplay; encrypted-media"
+          frameBorder={0}
+        />
       </div>
       <div className="absolute inset-0 bg-black/45" />
       <div className="relative flex h-full w-full items-center justify-center px-8">
