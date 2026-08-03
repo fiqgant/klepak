@@ -77,6 +77,25 @@ export default function SettingsSection() {
     }
   }
 
+  async function handleRemoveAudio() {
+    setSaving(true);
+    setSaved(false);
+    setError(null);
+    try {
+      await supabase
+        .from("settings")
+        .update({ idle_audio_url: null })
+        .eq("id", 1);
+      setIdleAudioUrl("");
+      setAudioFile(null);
+      setSaved(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal menghapus.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <Section title="Pengaturan">
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
@@ -115,9 +134,23 @@ export default function SettingsSection() {
           className="rounded-base border-2 border-border bg-secondary-background p-2 text-sm font-base text-foreground"
         />
         {idleAudioUrl && !audioFile && (
-          <p className="text-xs text-foreground/50">
-            File tersimpan saat ini: {idleAudioUrl.split("/").pop()}
-          </p>
+          <div className="flex flex-col gap-2 rounded-base border-2 border-border bg-background p-3">
+            <p className="text-xs text-foreground/50">
+              File tersimpan saat ini: {idleAudioUrl.split("/").pop()}
+            </p>
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+            <audio src={idleAudioUrl} controls className="w-full" />
+            <Button
+              type="button"
+              variant="neutral"
+              size="sm"
+              disabled={saving}
+              onClick={handleRemoveAudio}
+              className="bg-destructive text-destructive-foreground"
+            >
+              Hapus musik
+            </Button>
+          </div>
         )}
         <p className="text-xs text-foreground/50">
           Diputar loop di latar hanya ketika layar benar-benar idle (tidak
