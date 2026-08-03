@@ -92,6 +92,7 @@ create table if not exists settings (
   poster_default_seconds  integer not null default 8,
   idle_youtube_url         text,
   idle_audio_url           text,
+  idle_audio_playing       boolean not null default true,
   updated_at               timestamptz not null default now(),
   constraint settings_singleton check (id = 1)
 );

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { toYouTubeEmbedUrl } from "@/lib/youtube";
 import { formatIndonesianDate } from "@/lib/date";
 import SplitFlapClock from "./SplitFlapClock";
@@ -8,8 +9,9 @@ import SplitFlapClock from "./SplitFlapClock";
 // content — see Slideshow.tsx. Two independent, optional layers:
 //   - youtubeUrl: a looping muted video fills the screen (cropped to
 //     always cover, like CSS background-size:cover).
-//   - audioUrl: a plain <audio> file looping in the background. Kept as
-//     a native element (not inside the YouTube iframe) because native
+//   - audioUrl: a plain <audio> file looping in the background, remote
+//     controllable (play/pause) from /admin via audioPlaying — kept as a
+//     native element (not inside the YouTube iframe) because native
 //     same-page media is generally given more autoplay leeway by
 //     browsers than third-party embedded iframes — YouTube's own embed
 //     wouldn't reliably autoplay even muted on some kiosk setups.
@@ -18,11 +20,27 @@ export default function IdleClock({
   now,
   youtubeUrl,
   audioUrl,
+  audioPlaying,
 }: {
   now: Date;
   youtubeUrl: string | null;
   audioUrl: string | null;
+  audioPlaying: boolean;
 }) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const el = audioRef.current;
+    if (!el) return;
+    if (audioPlaying) {
+      el.play().catch(() => {
+        // Autoplay refused by the browser — nothing more we can do here.
+      });
+    } else {
+      el.pause();
+    }
+  }, [audioPlaying, audioUrl]);
+
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
       {youtubeUrl ? (
@@ -45,7 +63,7 @@ export default function IdleClock({
       )}
       {audioUrl && (
         // eslint-disable-next-line jsx-a11y/media-has-caption
-        <audio src={audioUrl} autoPlay loop className="hidden" />
+        <audio ref={audioRef} src={audioUrl} loop className="hidden" />
       )}
       {youtubeUrl && <div className="absolute inset-0 bg-black/45" />}
       <div className="relative flex h-full w-full items-center justify-center px-8">

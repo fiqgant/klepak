@@ -73,6 +73,7 @@ export interface Settings {
   poster_default_seconds: number;
   idle_youtube_url: string | null;
   idle_audio_url: string | null;
+  idle_audio_playing: boolean;
   updated_at: string;
 }
 

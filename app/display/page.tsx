@@ -251,6 +251,7 @@ export default function DisplayPage() {
         defaultSeconds={settings?.poster_default_seconds ?? 20}
         idleYoutubeUrl={settings?.idle_youtube_url}
         idleAudioUrl={settings?.idle_audio_url}
+        idleAudioPlaying={settings?.idle_audio_playing ?? true}
       />
     </main>
   );

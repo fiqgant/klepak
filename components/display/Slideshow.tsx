@@ -23,12 +23,14 @@ export default function Slideshow({
   defaultSeconds,
   idleYoutubeUrl,
   idleAudioUrl,
+  idleAudioPlaying,
 }: {
   views: DisplayView[];
   now: Date;
   defaultSeconds: number;
   idleYoutubeUrl?: string | null;
   idleAudioUrl?: string | null;
+  idleAudioPlaying?: boolean;
 }) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -118,6 +120,7 @@ export default function Slideshow({
             now={now}
             youtubeUrl={idleYoutubeUrl ?? null}
             audioUrl={idleAudioUrl ?? null}
+            audioPlaying={idleAudioPlaying ?? true}
           />
         )}
         {current.kind === "announcements" && (

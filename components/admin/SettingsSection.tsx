@@ -26,6 +26,7 @@ export default function SettingsSection() {
   const [seconds, setSeconds] = useState("8");
   const [idleYoutubeUrl, setIdleYoutubeUrl] = useState("");
   const [idleAudioUrl, setIdleAudioUrl] = useState("");
+  const [idleAudioPlaying, setIdleAudioPlaying] = useState(true);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -43,6 +44,7 @@ export default function SettingsSection() {
         setSeconds(String(data.poster_default_seconds));
         setIdleYoutubeUrl(data.idle_youtube_url ?? "");
         setIdleAudioUrl(data.idle_audio_url ?? "");
+        setIdleAudioPlaying(data.idle_audio_playing ?? true);
       }
     }
     load();
@@ -74,6 +76,21 @@ export default function SettingsSection() {
       setError(err instanceof Error ? err.message : "Gagal menyimpan.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleToggleAudioPlaying() {
+    const next = !idleAudioPlaying;
+    setIdleAudioPlaying(next);
+    setError(null);
+    try {
+      await supabase
+        .from("settings")
+        .update({ idle_audio_playing: next })
+        .eq("id", 1);
+    } catch (err) {
+      setIdleAudioPlaying(!next);
+      setError(err instanceof Error ? err.message : "Gagal mengubah.");
     }
   }
 
@@ -140,16 +157,35 @@ export default function SettingsSection() {
             </p>
             {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
             <audio src={idleAudioUrl} controls className="w-full" />
-            <Button
-              type="button"
-              variant="neutral"
-              size="sm"
-              disabled={saving}
-              onClick={handleRemoveAudio}
-              className="bg-destructive text-destructive-foreground"
-            >
-              Hapus musik
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="neutral"
+                size="sm"
+                onClick={handleToggleAudioPlaying}
+                className={
+                  idleAudioPlaying
+                    ? "bg-main text-main-foreground"
+                    : undefined
+                }
+              >
+                {idleAudioPlaying ? "⏸ Pause di /display" : "▶ Play di /display"}
+              </Button>
+              <Button
+                type="button"
+                variant="neutral"
+                size="sm"
+                disabled={saving}
+                onClick={handleRemoveAudio}
+                className="bg-destructive text-destructive-foreground"
+              >
+                Hapus musik
+              </Button>
+            </div>
+            <p className="text-xs text-foreground/50">
+              Tombol play/pause di atas langsung ngefek ke /display detik itu
+              juga (butuh koneksi realtime, bukan lewat tombol Simpan).
+            </p>
           </div>
         )}
         <p className="text-xs text-foreground/50">
