@@ -127,11 +127,15 @@ export default function IdleClock({
             alt="WBI"
             className="h-5 w-auto object-contain sm:h-7"
           />
+          {/* Source PNG has large symmetric transparent padding (content is
+              only ~45% of the canvas height) — crop it out with object-cover
+              on a matching aspect-ratio box so it reads the same visual
+              height as the WBI logo instead of looking tiny. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://wbiic.wbi.ac.id/images/logo_wbiic.png"
             alt="WBIIC"
-            className="h-5 w-auto object-contain sm:h-7"
+            className="aspect-[974/270] h-5 w-auto object-cover object-center sm:h-7"
           />
         </div>
       </div>
