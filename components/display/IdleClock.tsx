@@ -10,6 +10,24 @@ import SplitFlapClock from "./SplitFlapClock";
 const NATURE_ROTATE_MS = 30_000;
 const QUOTE_ROTATE_MS = 15_000;
 
+const CLOCK_POSITIONS = ["top-left", "top-right", "bottom-left", "bottom-right"] as const;
+type ClockPosition = (typeof CLOCK_POSITIONS)[number];
+
+const CLOCK_POSITION_CLASSES: Record<ClockPosition, string> = {
+  "top-left": "left-6 top-6 sm:left-10 sm:top-10",
+  "top-right": "right-6 top-6 sm:right-10 sm:top-10",
+  "bottom-left": "left-6 bottom-6 sm:left-10 sm:bottom-10",
+  "bottom-right": "right-6 bottom-6 sm:right-10 sm:bottom-10",
+};
+
+// Picks a random clock corner, avoiding an immediate repeat of `exclude`.
+function randomClockPosition(exclude?: ClockPosition): ClockPosition {
+  const options = exclude
+    ? CLOCK_POSITIONS.filter((p) => p !== exclude)
+    : CLOCK_POSITIONS;
+  return options[Math.floor(Math.random() * options.length)];
+}
+
 // Idle-state background: only used when there is truly no other active
 // content — see Slideshow.tsx. Two independent, optional layers:
 //   - youtubeUrl: a looping muted video fills the screen (cropped to
@@ -38,6 +56,9 @@ export default function IdleClock({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [natureIndex, setNatureIndex] = useState(() => randomImageIndex());
   const [quoteIndex, setQuoteIndex] = useState(() => randomQuoteIndex());
+  const [clockPosition, setClockPosition] = useState<ClockPosition>(() =>
+    randomClockPosition(),
+  );
 
   useEffect(() => {
     const el = audioRef.current;
@@ -55,6 +76,7 @@ export default function IdleClock({
     if (youtubeUrl) return;
     const id = setInterval(() => {
       setNatureIndex((i) => randomImageIndex(i));
+      setClockPosition((p) => randomClockPosition(p));
     }, NATURE_ROTATE_MS);
     return () => clearInterval(id);
   }, [youtubeUrl]);
@@ -97,6 +119,23 @@ export default function IdleClock({
       )}
       <div className="absolute inset-0 bg-black/45" />
 
+      <div className="absolute inset-x-0 top-3 z-10 flex justify-center sm:top-4">
+        <div className="flex items-center gap-2 rounded-base border-4 border-border bg-secondary-background/95 px-3 py-1.5 shadow-shadow sm:gap-3 sm:px-4 sm:py-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://wbiic.wbi.ac.id/images/logo.png"
+            alt="WBI"
+            className="h-5 w-auto object-contain sm:h-7"
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://wbiic.wbi.ac.id/images/logo_wbiic.png"
+            alt="WBIIC"
+            className="h-5 w-auto object-contain sm:h-7"
+          />
+        </div>
+      </div>
+
       {youtubeUrl ? (
         <div className="relative flex h-full w-full items-center justify-center px-8">
           <div className="flex flex-col items-center gap-4 rounded-base border-4 border-border bg-secondary-background px-10 py-10 shadow-shadow sm:px-16 sm:py-12">
@@ -108,7 +147,9 @@ export default function IdleClock({
         </div>
       ) : (
         <>
-          <div className="absolute right-6 top-6 flex flex-col items-center gap-1 rounded-base border-4 border-border bg-secondary-background/95 px-5 py-3 shadow-shadow sm:right-10 sm:top-10 sm:px-6 sm:py-4">
+          <div
+            className={`absolute flex flex-col items-center gap-1 rounded-base border-4 border-border bg-secondary-background/95 px-5 py-3 shadow-shadow sm:px-6 sm:py-4 ${CLOCK_POSITION_CLASSES[clockPosition]}`}
+          >
             <p className="font-heading text-3xl tabular-nums text-foreground sm:text-4xl">
               {hours}:{minutes}
             </p>
@@ -116,7 +157,13 @@ export default function IdleClock({
               {formatIndonesianDate(now)}
             </p>
           </div>
-          <div className="absolute inset-x-0 bottom-8 flex justify-center px-6 sm:bottom-12">
+          <div
+            className={`absolute inset-x-0 flex justify-center px-6 ${
+              clockPosition.startsWith("bottom")
+                ? "top-24 sm:top-28"
+                : "bottom-8 sm:bottom-12"
+            }`}
+          >
             <div
               key={quoteIndex}
               className="idle-nature-bg max-w-3xl rounded-base border-4 border-border bg-secondary-background/95 px-6 py-4 text-center shadow-shadow sm:px-10 sm:py-6"
