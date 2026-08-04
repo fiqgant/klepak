@@ -200,3 +200,25 @@
     animation: none !important;
   }
 }
+
+/* Fade-in used for the idle-screen nature background photo and quote
+   card whenever they rotate to a new item (React remounts on `key`
+   change, so this plays each time). */
+.idle-nature-bg {
+  animation: idle-nature-fade-in 1.4s ease-in-out;
+}
+
+@keyframes idle-nature-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .idle-nature-bg {
+    animation: none !important;
+  }
+}
