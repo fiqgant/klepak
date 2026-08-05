@@ -28,13 +28,15 @@ function randomClockPosition(exclude?: ClockPosition): ClockPosition {
   return options[Math.floor(Math.random() * options.length)];
 }
 
-// Pan directions for the Ken Burns background effect — cycled by photo
-// index so consecutive photos don't all drift the same way.
+// Pan + tilt for the 3D Ken Burns background effect — cycled by photo
+// index so consecutive photos don't all drift the same way. rx/ry add
+// the rotateX/rotateY tilt that (combined with the container's
+// `perspective`) makes the pan read as depth instead of a flat slide.
 const PARALLAX_OFFSETS = [
-  { x: "-4%", y: "-3%" },
-  { x: "4%", y: "-3%" },
-  { x: "-4%", y: "3%" },
-  { x: "4%", y: "3%" },
+  { x: "-4%", y: "-3%", rx: "2deg", ry: "-2.5deg" },
+  { x: "4%", y: "-3%", rx: "-2deg", ry: "2.5deg" },
+  { x: "-4%", y: "3%", rx: "2deg", ry: "2.5deg" },
+  { x: "4%", y: "3%", rx: "-2deg", ry: "-2.5deg" },
 ];
 
 // Idle-state background: only used when there is truly no other active
@@ -102,7 +104,10 @@ export default function IdleClock({
   const quote = ENTREPRENEUR_QUOTES[quoteIndex];
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-black">
+    <div
+      className="relative h-full w-full overflow-hidden bg-black"
+      style={{ perspective: "1400px" }}
+    >
       {youtubeUrl ? (
         <div className="absolute inset-0 overflow-hidden">
           <iframe
@@ -126,6 +131,10 @@ export default function IdleClock({
                 PARALLAX_OFFSETS[natureIndex % PARALLAX_OFFSETS.length].x,
               "--parallax-y":
                 PARALLAX_OFFSETS[natureIndex % PARALLAX_OFFSETS.length].y,
+              "--parallax-rx":
+                PARALLAX_OFFSETS[natureIndex % PARALLAX_OFFSETS.length].rx,
+              "--parallax-ry":
+                PARALLAX_OFFSETS[natureIndex % PARALLAX_OFFSETS.length].ry,
             } as React.CSSProperties
           }
         />
@@ -137,7 +146,7 @@ export default function IdleClock({
       <div className="absolute inset-0 bg-black/45" />
 
       <div className="absolute inset-x-0 top-3 z-10 flex justify-center sm:top-4">
-        <div className="flex items-center gap-3 rounded-base border-4 border-border bg-secondary-background/95 px-4 py-2 shadow-shadow sm:gap-4 sm:px-6 sm:py-3">
+        <div className="idle-foreground-float flex items-center gap-3 rounded-base border-4 border-border bg-secondary-background/95 px-4 py-2 shadow-shadow sm:gap-4 sm:px-6 sm:py-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://wbiic.wbi.ac.id/images/logo.png"
@@ -169,7 +178,7 @@ export default function IdleClock({
       ) : (
         <>
           <div
-            className={`absolute flex flex-col items-center gap-1 rounded-base border-4 border-border bg-secondary-background/95 px-6 py-4 shadow-shadow sm:px-8 sm:py-5 ${CLOCK_POSITION_CLASSES[clockPosition]}`}
+            className={`idle-foreground-float absolute flex flex-col items-center gap-1 rounded-base border-4 border-border bg-secondary-background/95 px-6 py-4 shadow-shadow sm:px-8 sm:py-5 ${CLOCK_POSITION_CLASSES[clockPosition]}`}
           >
             <p className="font-heading text-5xl tabular-nums text-foreground sm:text-6xl">
               {hours}:{minutes}:{seconds}
@@ -187,7 +196,7 @@ export default function IdleClock({
           >
             <div
               key={quoteIndex}
-              className="idle-nature-bg max-w-4xl rounded-base border-4 border-border bg-secondary-background/95 px-8 py-5 text-center shadow-shadow sm:px-12 sm:py-8"
+              className="idle-nature-bg idle-foreground-float max-w-4xl rounded-base border-4 border-border bg-secondary-background/95 px-8 py-5 text-center shadow-shadow sm:px-12 sm:py-8"
             >
               <p className="font-heading text-2xl text-foreground sm:text-4xl">
                 &ldquo;{quote.text}&rdquo;

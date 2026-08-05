@@ -217,29 +217,65 @@
   }
 }
 
-/* Slow Ken Burns-style zoom/pan on the idle background photo — pan
-   direction/distance come from --parallax-x/--parallax-y custom
-   properties set inline per photo. Duration is kept in sync with
-   NATURE_ROTATE_MS in IdleClock.tsx so the motion runs for the whole
-   time a photo is on screen. */
+/* 3D parallax: the idle container gets `perspective` (inline style in
+   IdleClock.tsx) so translateZ/rotateX/rotateY below read as real depth
+   instead of a flat pan. The background photo drifts back on the Z axis
+   and tilts slightly (pan/tilt direction from --parallax-x/y/rx/ry, set
+   inline per photo); foreground cards float forward on their own
+   independent cycle in .idle-foreground-float below. The gap between the
+   two motions is what sells the depth illusion.
+   NOTE: a second class can't just set its own `animation` shorthand — the
+   last-declared rule would silently win and drop the other animation.
+   Combos are declared as compound selectors so both always apply. */
 .idle-nature-parallax {
-  animation: idle-nature-parallax 32s ease-out forwards;
   transform-origin: center;
+  will-change: transform;
 }
 
-@keyframes idle-nature-parallax {
+.idle-nature-bg.idle-nature-parallax {
+  animation:
+    idle-nature-fade-in 1.4s ease-in-out,
+    idle-nature-parallax-tilt 32s ease-out forwards;
+}
+
+@keyframes idle-nature-parallax-tilt {
   from {
-    transform: scale(1) translate3d(0, 0, 0);
+    transform: scale3d(1, 1, 1) translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg);
   }
   to {
-    transform: scale(1.15)
-      translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0);
+    transform: scale3d(1.18, 1.18, 1)
+      translate3d(var(--parallax-x, 0), var(--parallax-y, 0), -140px)
+      rotateX(var(--parallax-rx, 2deg)) rotateY(var(--parallax-ry, -2.5deg));
+  }
+}
+
+/* Foreground layer (clock, quote, logo bar) — floats gently forward of
+   the receding background photo above, on its own short infinite loop
+   independent from the 30s photo rotation. */
+.idle-foreground-float {
+  animation: idle-foreground-float 6s ease-in-out infinite alternate;
+  transform-style: preserve-3d;
+}
+
+.idle-nature-bg.idle-foreground-float {
+  animation:
+    idle-nature-fade-in 1.4s ease-in-out,
+    idle-foreground-float 6s ease-in-out infinite alternate;
+}
+
+@keyframes idle-foreground-float {
+  from {
+    transform: translate3d(0, 0, 40px) rotateX(0deg);
+  }
+  to {
+    transform: translate3d(0, -8px, 70px) rotateX(1.5deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .idle-nature-bg,
-  .idle-nature-parallax {
+  .idle-nature-parallax,
+  .idle-foreground-float {
     animation: none !important;
   }
 }
