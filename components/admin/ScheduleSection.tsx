@@ -143,12 +143,8 @@ function Row({
 }
 
 export default function ScheduleSection({
-  open,
-  onOpenChange,
-}: {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-} = {}) {
+  alwaysOpen,
+}: { alwaysOpen?: boolean } = {}) {
   const { rows, loading, error, add, update, remove, toggleActive, move } =
     useAdminTable<ScheduleItem>("schedule_items");
 
@@ -158,8 +154,7 @@ export default function ScheduleSection({
       title="Jadwal"
       icon={<CalendarClock size={18} />}
       badge={`${rows.length}`}
-      open={open}
-      onOpenChange={onOpenChange}
+      alwaysOpen={alwaysOpen}
     >
       <AddForm onAdd={add} />
       {loading && <p className="text-sm text-foreground/50">Memuat...</p>}

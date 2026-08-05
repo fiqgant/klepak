@@ -182,12 +182,8 @@ function Row({
 }
 
 export default function VideosSection({
-  open,
-  onOpenChange,
-}: {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-} = {}) {
+  alwaysOpen,
+}: { alwaysOpen?: boolean } = {}) {
   const { rows, loading, error, add, update, remove, toggleActive, move } =
     useAdminTable<Video>("videos");
 
@@ -197,8 +193,7 @@ export default function VideosSection({
       title="Video"
       icon={<VideoIcon size={18} />}
       badge="Eksperimental"
-      open={open}
-      onOpenChange={onOpenChange}
+      alwaysOpen={alwaysOpen}
     >
       <p className="mb-3 rounded-base border-2 border-border bg-background px-3 py-2 text-sm font-base text-foreground">
         Fitur eksperimental — chipset TV/STB lama sering kesulitan memutar

@@ -9,8 +9,7 @@ export default function Section({
   icon,
   badge,
   defaultOpen = false,
-  open: openProp,
-  onOpenChange,
+  alwaysOpen = false,
   children,
 }: {
   id?: string;
@@ -18,49 +17,52 @@ export default function Section({
   icon?: ReactNode;
   badge?: string;
   defaultOpen?: boolean;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  alwaysOpen?: boolean;
   children: ReactNode;
 }) {
-  const [openState, setOpenState] = useState(defaultOpen);
-  const open = openProp ?? openState;
+  const [open, setOpen] = useState(defaultOpen);
 
-  function toggle() {
-    const next = !open;
-    if (onOpenChange) {
-      onOpenChange(next);
-    } else {
-      setOpenState(next);
-    }
-  }
+  const headerContent = (
+    <>
+      <span className="flex items-center gap-2">
+        {icon && (
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-base border-2 border-border bg-background text-foreground">
+            {icon}
+          </span>
+        )}
+        <span className="font-heading text-lg uppercase tracking-wide text-foreground">
+          {title}
+        </span>
+        {badge && <Badge>{badge}</Badge>}
+      </span>
+      {!alwaysOpen && (
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-base border-2 border-border bg-background text-lg font-heading text-foreground">
+          {open ? "−" : "+"}
+        </span>
+      )}
+    </>
+  );
 
   return (
     <section
       id={id}
       className="scroll-mt-28 rounded-base border-2 border-border bg-secondary-background shadow-shadow"
     >
-      <button
-        type="button"
-        onClick={toggle}
-        aria-expanded={open}
-        className="flex w-full items-center justify-between px-4 py-3 text-left"
-      >
-        <span className="flex items-center gap-2">
-          {icon && (
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-base border-2 border-border bg-background text-foreground">
-              {icon}
-            </span>
-          )}
-          <span className="font-heading text-lg uppercase tracking-wide text-foreground">
-            {title}
-          </span>
-          {badge && <Badge>{badge}</Badge>}
-        </span>
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-base border-2 border-border bg-background text-lg font-heading text-foreground">
-          {open ? "−" : "+"}
-        </span>
-      </button>
-      {open && (
+      {alwaysOpen ? (
+        <div className="flex w-full items-center justify-between px-4 py-3 text-left">
+          {headerContent}
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          className="flex w-full items-center justify-between px-4 py-3 text-left"
+        >
+          {headerContent}
+        </button>
+      )}
+      {(alwaysOpen || open) && (
         <div className="border-t-2 border-border px-4 py-4">{children}</div>
       )}
     </section>

@@ -153,12 +153,8 @@ function Row({
 }
 
 export default function QrLinksSection({
-  open,
-  onOpenChange,
-}: {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-} = {}) {
+  alwaysOpen,
+}: { alwaysOpen?: boolean } = {}) {
   const { rows, loading, error, add, update, remove, toggleActive, move } =
     useAdminTable<QrLink>("qr_links");
 
@@ -168,8 +164,7 @@ export default function QrLinksSection({
       title="QR / Tautan"
       icon={<QrCode size={18} />}
       badge={`${rows.length}`}
-      open={open}
-      onOpenChange={onOpenChange}
+      alwaysOpen={alwaysOpen}
     >
       <AddForm onAdd={add} />
       {loading && <p className="text-sm text-foreground/50">Memuat...</p>}

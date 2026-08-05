@@ -141,12 +141,8 @@ function Row({
 }
 
 export default function AnnouncementsSection({
-  open,
-  onOpenChange,
-}: {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-} = {}) {
+  alwaysOpen,
+}: { alwaysOpen?: boolean } = {}) {
   const { rows, loading, error, add, update, remove, toggleActive, move } =
     useAdminTable<Announcement>("announcements");
 
@@ -156,8 +152,7 @@ export default function AnnouncementsSection({
       title="Pengumuman"
       icon={<Megaphone size={18} />}
       badge={`${rows.length}`}
-      open={open}
-      onOpenChange={onOpenChange}
+      alwaysOpen={alwaysOpen}
     >
       <AddForm onAdd={add} />
       {loading && <p className="text-sm text-foreground/50">Memuat...</p>}

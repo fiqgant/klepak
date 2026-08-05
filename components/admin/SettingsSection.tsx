@@ -22,12 +22,8 @@ async function uploadIdleAudioFile(file: File): Promise<string> {
 }
 
 export default function SettingsSection({
-  open,
-  onOpenChange,
-}: {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-} = {}) {
+  alwaysOpen,
+}: { alwaysOpen?: boolean } = {}) {
   const supabase = useMemo(() => createClient(), []);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [seconds, setSeconds] = useState("8");
@@ -125,8 +121,7 @@ export default function SettingsSection({
       id="pengaturan"
       title="Pengaturan"
       icon={<SettingsIcon size={18} />}
-      open={open}
-      onOpenChange={onOpenChange}
+      alwaysOpen={alwaysOpen}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
         <Label>Durasi tampil poster default (detik)</Label>

@@ -177,12 +177,8 @@ function Row({
 }
 
 export default function PostersSection({
-  open,
-  onOpenChange,
-}: {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-} = {}) {
+  alwaysOpen,
+}: { alwaysOpen?: boolean } = {}) {
   const { rows, loading, error, add, update, remove, toggleActive, move } =
     useAdminTable<Poster>("posters");
 
@@ -192,8 +188,7 @@ export default function PostersSection({
       title="Poster"
       icon={<ImageIcon size={18} />}
       badge={`${rows.length}`}
-      open={open}
-      onOpenChange={onOpenChange}
+      alwaysOpen={alwaysOpen}
     >
       <AddForm onAdd={add} />
       {loading && <p className="text-sm text-foreground/50">Memuat...</p>}
