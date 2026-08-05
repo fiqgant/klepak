@@ -137,12 +137,12 @@ export default function IdleClock({
       <div className="absolute inset-0 bg-black/45" />
 
       <div className="absolute inset-x-0 top-3 z-10 flex justify-center sm:top-4">
-        <div className="flex items-center gap-2 rounded-base border-4 border-border bg-secondary-background/95 px-3 py-1.5 shadow-shadow sm:gap-3 sm:px-4 sm:py-2">
+        <div className="flex items-center gap-3 rounded-base border-4 border-border bg-secondary-background/95 px-4 py-2 shadow-shadow sm:gap-4 sm:px-6 sm:py-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://wbiic.wbi.ac.id/images/logo.png"
             alt="WBI"
-            className="h-5 w-auto object-contain sm:h-7"
+            className="h-8 w-auto object-contain sm:h-12"
           />
           {/* Source PNG has large symmetric transparent padding (content is
               only ~45% of the canvas height) — crop it out with object-cover
@@ -152,7 +152,7 @@ export default function IdleClock({
           <img
             src="https://wbiic.wbi.ac.id/images/logo_wbiic.png"
             alt="WBIIC"
-            className="aspect-[974/270] h-5 w-auto object-cover object-center sm:h-7"
+            className="aspect-[974/270] h-8 w-auto object-cover object-center sm:h-12"
           />
         </div>
       </div>
@@ -169,30 +169,30 @@ export default function IdleClock({
       ) : (
         <>
           <div
-            className={`absolute flex flex-col items-center gap-1 rounded-base border-4 border-border bg-secondary-background/95 px-5 py-3 shadow-shadow sm:px-6 sm:py-4 ${CLOCK_POSITION_CLASSES[clockPosition]}`}
+            className={`absolute flex flex-col items-center gap-1 rounded-base border-4 border-border bg-secondary-background/95 px-6 py-4 shadow-shadow sm:px-8 sm:py-5 ${CLOCK_POSITION_CLASSES[clockPosition]}`}
           >
-            <p className="font-heading text-3xl tabular-nums text-foreground sm:text-4xl">
+            <p className="font-heading text-5xl tabular-nums text-foreground sm:text-6xl">
               {hours}:{minutes}
             </p>
-            <p className="text-center text-xs font-heading text-foreground/70 sm:text-sm">
+            <p className="text-center text-sm font-heading text-foreground/70 sm:text-lg">
               {formatIndonesianDate(now)}
             </p>
           </div>
           <div
             className={`absolute inset-x-0 flex justify-center px-6 ${
               clockPosition.startsWith("bottom")
-                ? "top-24 sm:top-28"
+                ? "top-28 sm:top-32"
                 : "bottom-8 sm:bottom-12"
             }`}
           >
             <div
               key={quoteIndex}
-              className="idle-nature-bg max-w-3xl rounded-base border-4 border-border bg-secondary-background/95 px-6 py-4 text-center shadow-shadow sm:px-10 sm:py-6"
+              className="idle-nature-bg max-w-4xl rounded-base border-4 border-border bg-secondary-background/95 px-8 py-5 text-center shadow-shadow sm:px-12 sm:py-8"
             >
-              <p className="font-heading text-lg text-foreground sm:text-2xl">
+              <p className="font-heading text-2xl text-foreground sm:text-4xl">
                 &ldquo;{quote.text}&rdquo;
               </p>
-              <p className="mt-2 text-sm font-heading text-foreground/70 sm:text-base">
+              <p className="mt-3 text-base font-heading text-foreground/70 sm:text-xl">
                 — {quote.author}
               </p>
             </div>
