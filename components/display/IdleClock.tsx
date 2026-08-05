@@ -28,6 +28,15 @@ function randomClockPosition(exclude?: ClockPosition): ClockPosition {
   return options[Math.floor(Math.random() * options.length)];
 }
 
+// Pan directions for the Ken Burns background effect — cycled by photo
+// index so consecutive photos don't all drift the same way.
+const PARALLAX_OFFSETS = [
+  { x: "-4%", y: "-3%" },
+  { x: "4%", y: "-3%" },
+  { x: "-4%", y: "3%" },
+  { x: "4%", y: "3%" },
+];
+
 // Idle-state background: only used when there is truly no other active
 // content — see Slideshow.tsx. Two independent, optional layers:
 //   - youtubeUrl: a looping muted video fills the screen (cropped to
@@ -110,7 +119,15 @@ export default function IdleClock({
           key={natureIndex}
           src={NATURE_IMAGES[natureIndex]}
           alt=""
-          className="idle-nature-bg absolute inset-0 h-full w-full object-cover"
+          className="idle-nature-bg idle-nature-parallax absolute inset-0 h-full w-full object-cover"
+          style={
+            {
+              "--parallax-x":
+                PARALLAX_OFFSETS[natureIndex % PARALLAX_OFFSETS.length].x,
+              "--parallax-y":
+                PARALLAX_OFFSETS[natureIndex % PARALLAX_OFFSETS.length].y,
+            } as React.CSSProperties
+          }
         />
       )}
       {audioUrl && (

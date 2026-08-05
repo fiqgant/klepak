@@ -217,8 +217,29 @@
   }
 }
 
+/* Slow Ken Burns-style zoom/pan on the idle background photo — pan
+   direction/distance come from --parallax-x/--parallax-y custom
+   properties set inline per photo. Duration is kept in sync with
+   NATURE_ROTATE_MS in IdleClock.tsx so the motion runs for the whole
+   time a photo is on screen. */
+.idle-nature-parallax {
+  animation: idle-nature-parallax 32s ease-out forwards;
+  transform-origin: center;
+}
+
+@keyframes idle-nature-parallax {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.15)
+      translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .idle-nature-bg {
+  .idle-nature-bg,
+  .idle-nature-parallax {
     animation: none !important;
   }
 }
