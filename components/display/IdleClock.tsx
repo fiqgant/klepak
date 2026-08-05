@@ -149,7 +149,7 @@ export default function IdleClock({
         <div className="idle-foreground-float flex items-center gap-3 rounded-base border-4 border-border bg-secondary-background/95 px-4 py-2 shadow-shadow sm:gap-4 sm:px-6 sm:py-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://wbiic.wbi.ac.id/images/logo.png"
+            src="/logos/wbi.webp"
             alt="WBI"
             className="h-8 w-auto object-contain sm:h-12"
           />
@@ -159,7 +159,7 @@ export default function IdleClock({
               height as the WBI logo instead of looking tiny. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://wbiic.wbi.ac.id/images/logo_wbiic.png"
+            src="/logos/wbiic.webp"
             alt="WBIIC"
             className="aspect-[974/270] h-8 w-auto object-cover object-center sm:h-12"
           />

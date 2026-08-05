@@ -11,6 +11,7 @@ export default function RowControls({
   onDelete,
   canMoveUp,
   canMoveDown,
+  itemLabel = "item ini",
 }: {
   isActive: boolean;
   onToggleActive: () => void;
@@ -19,7 +20,16 @@ export default function RowControls({
   onDelete: () => void;
   canMoveUp: boolean;
   canMoveDown: boolean;
+  itemLabel?: string;
 }) {
+  function handleDelete() {
+    if (
+      window.confirm(`Hapus ${itemLabel}? Tindakan ini tidak bisa dibatalkan.`)
+    ) {
+      onDelete();
+    }
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Button
@@ -50,7 +60,7 @@ export default function RowControls({
         type="button"
         variant="neutral"
         size="sm"
-        onClick={onDelete}
+        onClick={handleDelete}
         aria-label="Hapus"
         className="ml-auto bg-destructive text-destructive-foreground"
       >

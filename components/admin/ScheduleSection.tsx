@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { CalendarClock } from "lucide-react";
 import { useAdminTable } from "@/lib/useAdminTable";
 import { todayLocalISODate } from "@/lib/date";
 import type { ScheduleItem } from "@/lib/types";
@@ -141,12 +142,25 @@ function Row({
   );
 }
 
-export default function ScheduleSection() {
+export default function ScheduleSection({
+  open,
+  onOpenChange,
+}: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+} = {}) {
   const { rows, loading, error, add, update, remove, toggleActive, move } =
     useAdminTable<ScheduleItem>("schedule_items");
 
   return (
-    <Section title="Jadwal" badge={`${rows.length}`}>
+    <Section
+      id="jadwal"
+      title="Jadwal"
+      icon={<CalendarClock size={18} />}
+      badge={`${rows.length}`}
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <AddForm onAdd={add} />
       {loading && <p className="text-sm text-foreground/50">Memuat...</p>}
       {error && <p className="text-sm text-destructive">{error}</p>}
@@ -164,6 +178,7 @@ export default function ScheduleSection() {
               onDelete={() => remove(row.id)}
               canMoveUp={i > 0}
               canMoveDown={i < rows.length - 1}
+              itemLabel="jadwal ini"
             />
           }
         />

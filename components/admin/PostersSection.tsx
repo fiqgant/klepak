@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Image as ImageIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { useAdminTable } from "@/lib/useAdminTable";
 import { toDatetimeLocalValue, fromDatetimeLocalValue } from "@/lib/date";
@@ -175,12 +176,25 @@ function Row({
   );
 }
 
-export default function PostersSection() {
+export default function PostersSection({
+  open,
+  onOpenChange,
+}: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+} = {}) {
   const { rows, loading, error, add, update, remove, toggleActive, move } =
     useAdminTable<Poster>("posters");
 
   return (
-    <Section title="Poster" badge={`${rows.length}`}>
+    <Section
+      id="poster"
+      title="Poster"
+      icon={<ImageIcon size={18} />}
+      badge={`${rows.length}`}
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <AddForm onAdd={add} />
       {loading && <p className="text-sm text-foreground/50">Memuat...</p>}
       {error && <p className="text-sm text-destructive">{error}</p>}
@@ -198,6 +212,7 @@ export default function PostersSection() {
               onDelete={() => remove(row.id)}
               canMoveUp={i > 0}
               canMoveDown={i < rows.length - 1}
+              itemLabel="poster ini"
             />
           }
         />

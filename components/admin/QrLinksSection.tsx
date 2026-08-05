@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { QrCode } from "lucide-react";
 import QRCode from "qrcode";
 import { useAdminTable } from "@/lib/useAdminTable";
 import { toDatetimeLocalValue, fromDatetimeLocalValue } from "@/lib/date";
@@ -151,12 +152,25 @@ function Row({
   );
 }
 
-export default function QrLinksSection() {
+export default function QrLinksSection({
+  open,
+  onOpenChange,
+}: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+} = {}) {
   const { rows, loading, error, add, update, remove, toggleActive, move } =
     useAdminTable<QrLink>("qr_links");
 
   return (
-    <Section title="QR / Tautan" badge={`${rows.length}`}>
+    <Section
+      id="qr-tautan"
+      title="QR / Tautan"
+      icon={<QrCode size={18} />}
+      badge={`${rows.length}`}
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <AddForm onAdd={add} />
       {loading && <p className="text-sm text-foreground/50">Memuat...</p>}
       {error && <p className="text-sm text-destructive">{error}</p>}
@@ -174,6 +188,7 @@ export default function QrLinksSection() {
               onDelete={() => remove(row.id)}
               canMoveUp={i > 0}
               canMoveDown={i < rows.length - 1}
+              itemLabel="tautan ini"
             />
           }
         />

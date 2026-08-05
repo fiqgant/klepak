@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Megaphone } from "lucide-react";
 import { useAdminTable } from "@/lib/useAdminTable";
 import { toDatetimeLocalValue, fromDatetimeLocalValue } from "@/lib/date";
 import type { Announcement, Priority } from "@/lib/types";
@@ -139,12 +140,25 @@ function Row({
   );
 }
 
-export default function AnnouncementsSection() {
+export default function AnnouncementsSection({
+  open,
+  onOpenChange,
+}: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+} = {}) {
   const { rows, loading, error, add, update, remove, toggleActive, move } =
     useAdminTable<Announcement>("announcements");
 
   return (
-    <Section title="Pengumuman" badge={`${rows.length}`}>
+    <Section
+      id="pengumuman"
+      title="Pengumuman"
+      icon={<Megaphone size={18} />}
+      badge={`${rows.length}`}
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <AddForm onAdd={add} />
       {loading && <p className="text-sm text-foreground/50">Memuat...</p>}
       {error && <p className="text-sm text-destructive">{error}</p>}
@@ -162,6 +176,7 @@ export default function AnnouncementsSection() {
               onDelete={() => remove(row.id)}
               canMoveUp={i > 0}
               canMoveDown={i < rows.length - 1}
+              itemLabel="pengumuman ini"
             />
           }
         />

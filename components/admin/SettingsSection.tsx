@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { Settings as SettingsIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import type { Settings } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,13 @@ async function uploadIdleAudioFile(file: File): Promise<string> {
     .publicUrl;
 }
 
-export default function SettingsSection() {
+export default function SettingsSection({
+  open,
+  onOpenChange,
+}: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+} = {}) {
   const supabase = useMemo(() => createClient(), []);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [seconds, setSeconds] = useState("8");
@@ -114,7 +121,13 @@ export default function SettingsSection() {
   }
 
   return (
-    <Section title="Pengaturan">
+    <Section
+      id="pengaturan"
+      title="Pengaturan"
+      icon={<SettingsIcon size={18} />}
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
         <Label>Durasi tampil poster default (detik)</Label>
         <Input

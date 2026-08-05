@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Video as VideoIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { useAdminTable } from "@/lib/useAdminTable";
 import { toDatetimeLocalValue, fromDatetimeLocalValue } from "@/lib/date";
@@ -180,12 +181,25 @@ function Row({
   );
 }
 
-export default function VideosSection() {
+export default function VideosSection({
+  open,
+  onOpenChange,
+}: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+} = {}) {
   const { rows, loading, error, add, update, remove, toggleActive, move } =
     useAdminTable<Video>("videos");
 
   return (
-    <Section title="Video" badge="Eksperimental">
+    <Section
+      id="video"
+      title="Video"
+      icon={<VideoIcon size={18} />}
+      badge="Eksperimental"
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <p className="mb-3 rounded-base border-2 border-border bg-background px-3 py-2 text-sm font-base text-foreground">
         Fitur eksperimental — chipset TV/STB lama sering kesulitan memutar
         video dengan lancar. Gunakan poster gambar jika memungkinkan.
@@ -207,6 +221,7 @@ export default function VideosSection() {
               onDelete={() => remove(row.id)}
               canMoveUp={i > 0}
               canMoveDown={i < rows.length - 1}
+              itemLabel="video ini"
             />
           }
         />
