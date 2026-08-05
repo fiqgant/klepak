@@ -44,8 +44,12 @@ const NATURE_PHOTO_IDS = [
   "1502786129293-79981df4e689", // turquoise glacier lake
 ];
 
+// auto=format,compress + fm=webp: Imgix picks the smallest modern format
+// the browser supports and applies its lossy-but-imperceptible compression
+// pass. w=1920 (resolution) is unchanged — only file size shrinks.
 export const NATURE_IMAGES: string[] = NATURE_PHOTO_IDS.map(
-  (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1920&q=80`
+  (id) =>
+    `https://images.unsplash.com/photo-${id}?auto=format,compress&fit=crop&w=1920&q=65&fm=webp`
 );
 
 // Picks a random index, avoiding an immediate repeat of `exclude`.

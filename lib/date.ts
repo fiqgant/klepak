@@ -1,38 +1,38 @@
-// Hardcoded Indonesian day/month names — old Android TV STB browsers have
+// Hardcoded English day/month names — old Android TV STB browsers have
 // inconsistent (or missing) Intl locale data, so we never rely on
-// toLocaleDateString('id-ID', ...) for the on-screen clock/date.
+// toLocaleDateString('en-US', ...) for the on-screen clock/date.
 
 const DAY_NAMES = [
-  "Minggu",
-  "Senin",
-  "Selasa",
-  "Rabu",
-  "Kamis",
-  "Jumat",
-  "Sabtu",
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
 ];
 
 const MONTH_NAMES = [
-  "Januari",
-  "Februari",
-  "Maret",
+  "January",
+  "February",
+  "March",
   "April",
-  "Mei",
-  "Juni",
-  "Juli",
-  "Agustus",
+  "May",
+  "June",
+  "July",
+  "August",
   "September",
-  "Oktober",
+  "October",
   "November",
-  "Desember",
+  "December",
 ];
 
-export function formatIndonesianDate(date: Date): string {
+export function formatEnglishDate(date: Date): string {
   const day = DAY_NAMES[date.getDay()];
   const dd = date.getDate();
   const month = MONTH_NAMES[date.getMonth()];
   const yyyy = date.getFullYear();
-  return `${day}, ${dd} ${month} ${yyyy}`;
+  return `${day}, ${month} ${dd}, ${yyyy}`;
 }
 
 export function pad2(n: number): string {

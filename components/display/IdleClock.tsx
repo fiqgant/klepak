@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { toYouTubeEmbedUrl } from "@/lib/youtube";
-import { formatIndonesianDate, formatTimeDigits } from "@/lib/date";
+import { formatEnglishDate, formatTimeDigits } from "@/lib/date";
 import { NATURE_IMAGES, randomImageIndex } from "@/lib/idleNature";
 import { ENTREPRENEUR_QUOTES, randomQuoteIndex } from "@/lib/idleQuotes";
 import SplitFlapClock from "./SplitFlapClock";
@@ -98,7 +98,7 @@ export default function IdleClock({
     return () => clearInterval(id);
   }, [youtubeUrl]);
 
-  const { hours, minutes } = formatTimeDigits(now);
+  const { hours, minutes, seconds } = formatTimeDigits(now);
   const quote = ENTREPRENEUR_QUOTES[quoteIndex];
 
   return (
@@ -162,7 +162,7 @@ export default function IdleClock({
           <div className="flex flex-col items-center gap-4 rounded-base border-4 border-border bg-secondary-background px-10 py-10 shadow-shadow sm:px-16 sm:py-12">
             <SplitFlapClock now={now} />
             <p className="text-center text-lg font-heading text-foreground/70 sm:text-2xl">
-              {formatIndonesianDate(now)}
+              {formatEnglishDate(now)}
             </p>
           </div>
         </div>
@@ -172,10 +172,10 @@ export default function IdleClock({
             className={`absolute flex flex-col items-center gap-1 rounded-base border-4 border-border bg-secondary-background/95 px-6 py-4 shadow-shadow sm:px-8 sm:py-5 ${CLOCK_POSITION_CLASSES[clockPosition]}`}
           >
             <p className="font-heading text-5xl tabular-nums text-foreground sm:text-6xl">
-              {hours}:{minutes}
+              {hours}:{minutes}:{seconds}
             </p>
             <p className="text-center text-sm font-heading text-foreground/70 sm:text-lg">
-              {formatIndonesianDate(now)}
+              {formatEnglishDate(now)}
             </p>
           </div>
           <div
